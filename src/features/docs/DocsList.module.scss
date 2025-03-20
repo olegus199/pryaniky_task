@@ -1,0 +1,29 @@
+@use "../../mixins" as *;
+
+.main_section {
+  padding: 0 1rem;
+}
+
+.content {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 3.875rem 0;
+}
+
+.header {
+  @include flex_space_between();
+}
+
+.h1 {
+  margin-right: 1rem;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.docs_list {
+  display: flex;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-top: 2.5rem;
+}

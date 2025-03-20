@@ -1,0 +1,65 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.document {
+  max-width: 22.875rem;
+  padding: 1.25rem 1.375rem;
+  border: 1px solid $neutral_200;
+  border-radius: .875rem;
+  background-color: $white;
+}
+
+.header {
+  @include flex_space_between();
+}
+
+.document_type {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.document_data {
+  margin-top: 1.75rem;
+}
+
+.label_data {
+  &:not(:last-child) {
+    margin-bottom: 1.125rem;
+  }
+}
+
+.label {
+  margin-bottom: .25rem;
+  font-size: .75rem;
+  font-weight: 500;
+  color: $neutral_100;
+}
+
+.text_content {
+  font-size: .875rem;
+}
+
+.files_list {
+  @include flex_align_center();
+
+  flex-wrap: wrap;
+  gap: 1.625rem;
+  margin-top: .75rem;
+}
+
+.file {
+  font-size: .875rem;
+}
+
+.file_icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  margin: 2rem 0;
+  border: none;
+  background-color: $neutral_200;
+}
