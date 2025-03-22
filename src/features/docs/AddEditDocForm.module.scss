@@ -1,0 +1,25 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.header {
+  @include flex_space_between();
+  align-items: baseline;
+}
+
+.h1 {
+  @include h1();
+}
+
+.return_link {
+  color: $black;
+  text-decoration: none;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.form {
+  margin: 2.5rem auto 0;
+  max-width: 30rem;
+}
