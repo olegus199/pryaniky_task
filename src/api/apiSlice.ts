@@ -1,45 +1,61 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IResponse, IDocument } from "../common/types.ts";
 import { NewDoc } from "../features/docs/AddEditDocForm.tsx";
+import { ILoginData } from "../features/auth/Login.tsx";
+import { RootState } from "../app/store.ts";
 
 const API_URL = "https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs";
-const tempToken = "supersecrettoken_for_user1";
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: API_URL,
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).authToken.token;
+
+    if (token) {
+      headers.set("x-auth", token);
+    }
+
+    return headers;
+  },
+});
 
 export const apiSlice = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery,
   tagTypes: ["Docs"],
   endpoints: (builder) => ({
-    getDocks: builder.query<IDocument[], void>({
-      query: () => ({
-        url: "/userdocs/get",
+    login: builder.mutation<IResponse<{ token: string }>, ILoginData>({
+      query: (data) => ({
+        url: "/login",
+        method: "POST",
+        body: JSON.stringify(data),
         headers: {
-          "x-auth": tempToken,
+          "content-type": "application/json",
         },
       }),
-      transformResponse: (response: IResponse<IDocument[]>) => {
-        return response.data;
-      },
+    }),
+    getDocks: builder.query<IResponse<IDocument[] | null>, void>({
+      query: () => ({
+        url: "/userdocs/get",
+      }),
       providesTags: ["Docs"],
     }),
-    addNewDoc: builder.mutation<IResponse<undefined>, NewDoc>({
+    addNewDoc: builder.mutation<IResponse<IDocument>, NewDoc>({
       query: (doc) => ({
         url: "/userdocs/create",
         method: "POST",
         body: JSON.stringify(doc),
         headers: {
-          "x-auth": tempToken,
           "Content-Type": "application/json",
         },
       }),
       invalidatesTags: ["Docs"],
     }),
-    editDoc: builder.mutation<IResponse<undefined>, { doc: NewDoc, id: string }>({
+    editDoc: builder.mutation<IResponse<IDocument>, { doc: NewDoc, id: string }>({
       query: ({ doc, id }) => ({
         url: `/userdocs/set/${id}`,
         method: "POST",
         body: JSON.stringify(doc),
         headers: {
-          "x-auth": tempToken,
           "Content-Type": "application/json",
         },
       }),
@@ -49,9 +65,6 @@ export const apiSlice = createApi({
       query: (id) => ({
         url: `/userdocs/delete/${id}`,
         method: "POST",
-        headers: {
-          "x-auth": tempToken,
-        },
       }),
       invalidatesTags: ["Docs"],
     }),
@@ -59,6 +72,7 @@ export const apiSlice = createApi({
 });
 
 export const {
+  useLoginMutation,
   useGetDocksQuery,
   useAddNewDocMutation,
   useEditDocMutation,
