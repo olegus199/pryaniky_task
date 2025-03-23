@@ -5,6 +5,7 @@
   @include flex_column();
 
   flex-grow: 1;
+  width: 100%;
   max-width: 22.875rem;
   padding: 1.25rem 1.375rem;
   border: 1px solid $neutral_200;
