@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../api/apiSlice.ts";
+import authTokenReducer from "../features/auth/authTokenSlice.ts";
 
 export const store = configureStore({
   reducer: {
-    // currencyPopupVisibility: currencyPopupReducer,
+    authToken: authTokenReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
