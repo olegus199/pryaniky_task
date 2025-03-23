@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import DocsList from "../features/docs/DocsList.tsx";
 import { FC, ReactNode } from "react";
 import AddEditDocForm from "../features/docs/AddEditDocForm.tsx";
@@ -12,6 +12,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
   const token = localStorage.getItem("authToken");
+  console.log(token);
   const dispatch = useAppDispatch();
 
   if (!token) {
@@ -19,16 +20,15 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
       to="/"
       replace
     />;
-  } else {
-    dispatch(tokenChanged(token));
   }
 
+  dispatch(tokenChanged(token));
   return children;
 };
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route
           path="/"
@@ -57,7 +57,7 @@ function App() {
         >
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
