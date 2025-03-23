@@ -6,14 +6,18 @@ import Document from "./Document.tsx";
 import { useNavigate } from "react-router-dom";
 import MainSection from "./MainSection.tsx";
 import CustomLoader from "../../UI/CustomLoader.tsx";
+import ErrorMsg from "../../UI/ErrorMsg.tsx";
 
 const DocsList: FC = () => {
-  const { data: docs = [], isFetching, isError, error } = useGetDocksQuery();
+  const { data: response, isFetching } = useGetDocksQuery();
   const navigate = useNavigate();
 
   function handleAddDocClick(): void {
     navigate("/add-edit-doc");
   }
+
+  const docs = response?.data;
+  const error = response?.error_text;
 
   return (
     <MainSection>
@@ -23,14 +27,14 @@ const DocsList: FC = () => {
           text="Добавить документ"
           variant="contained"
           color="primary"
+          disabled={!docs}
           onClick={handleAddDocClick}
         />
       </div>
       <div className={styles.body}>
-
         {isFetching ? <CustomLoader /> : (
           <ul className={styles.docs_list}>
-            {docs.map((document) => (
+            {docs && docs.map((document) => (
               <Document
                 key={document.id}
                 document={document}
@@ -39,6 +43,8 @@ const DocsList: FC = () => {
           </ul>
         )}
       </div>
+
+      {error && <ErrorMsg msg={error} />}
     </MainSection>
   );
 };

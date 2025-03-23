@@ -11,9 +11,10 @@ export interface IDocument {
 }
 
 export interface IResponse<T> {
-  data: T;
+  data: T | null;
   error_code: number;
-  error_message: string;
   profiling: string;
+  error_text?: string;
+  error_message?: string;
   timings: string | null;
 }

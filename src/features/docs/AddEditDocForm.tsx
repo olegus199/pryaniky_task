@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { formatISO, parseISO } from "date-fns";
 import { useAddNewDocMutation, useEditDocMutation, useGetDocksQuery } from "../../api/apiSlice.ts";
+import ErrorMsg from "../../UI/ErrorMsg.tsx";
 
 export type NewDoc = Omit<IDocument, "id">;
 
@@ -69,17 +70,21 @@ function defineInitState(doc?: IDocument): NewDoc {
 
 const AddEditDocForm: FC = () => {
   const { id } = useParams();
-  const { data: docs = [] } = useGetDocksQuery();
-  const doc = docs.find((d) => d.id === id);
+  const { data: response } = useGetDocksQuery();
+  const doc = response?.data?.find((d) => d.id === id);
 
   const [formData, setFormData] = useState<NewDoc>(defineInitState(doc));
   const [addDocState, formAction, pending] = useActionState<undefined>(addEditDocAction, undefined);
+  const [error, setError] = useState("");
 
   const [addDoc] = useAddNewDocMutation();
   const [editDoc] = useEditDocMutation();
   const navigate = useNavigate();
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    // Reset error
+    setError("");
+
     const { name, value } = e.target;
 
     setFormData((prev) => (
@@ -90,6 +95,9 @@ const AddEditDocForm: FC = () => {
   }
 
   function handleDateChange(date: Date | null, key: DateInputNames) {
+    // Reset error
+    setError("");
+
     try {
       if (date) {
         const formatted = formatISO(date);
@@ -106,11 +114,28 @@ const AddEditDocForm: FC = () => {
   async function addEditDocAction(): Promise<undefined> {
     try {
       if (doc) {
-        await editDoc({ doc: formData, id: doc.id }).unwrap();
+        // Edit doc
+        const result = await editDoc({ doc: formData, id: doc.id }).unwrap();
+
+        if (result.data) {
+          navigate("/docs");
+        } else {
+          if (result.error_text) {
+            setError(result.error_text);
+          }
+        }
       } else {
-        await addDoc(formData).unwrap();
+        // Create doc
+        const result = await addDoc(formData).unwrap();
+
+        if (result.data) {
+          navigate("/docs");
+        } else {
+          if (result.error_text) {
+            setError(result.error_text);
+          }
+        }
       }
-      navigate("/");
     } catch (e) {
       console.error("Failed to add doc", e);
     }
@@ -121,7 +146,7 @@ const AddEditDocForm: FC = () => {
       <div className={styles.header}>
         <h1 className={styles.h1}>{doc ? "Редактирование документа" : "Новый документ"}</h1>
         <Link
-          to="/"
+          to="/docs"
           className={styles.return_link}
         >
           К документам
@@ -178,6 +203,8 @@ const AddEditDocForm: FC = () => {
           />
         </Stack>
       </form>
+
+      {error && <ErrorMsg msg={error} />}
     </MainSection>
   );
 };
