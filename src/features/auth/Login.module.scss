@@ -1,0 +1,13 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.h1 {
+  @include h1();
+
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.form {
+  @include form();
+}
